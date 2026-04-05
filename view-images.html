@@ -8,22 +8,12 @@
     <div id="image-container"></div>
     
     <script>
-        // Recuperar imagens do localStorage
         const images = localStorage.getItem('capturedImage');
         if(images) {
             const img = document.createElement('img');
             img.src = images;
             img.style.maxWidth = '100%';
             document.getElementById('image-container').appendChild(img);
-            
-            // Botão para limpar imagens
-            const clearBtn = document.createElement('button');
-            clearBtn.textContent = 'Limpar Fotos';
-            clearBtn.onclick = () => {
-                localStorage.removeItem('capturedImage');
-                document.getElementById('image-container').innerHTML = '';
-            };
-            document.body.appendChild(clearBtn);
         } else {
             document.getElementById('image-container').innerHTML = '<p>Nenhuma foto capturada ainda.</p>';
         }
