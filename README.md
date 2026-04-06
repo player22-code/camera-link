@@ -40,7 +40,7 @@ button {
 <div id="countdown"></div>
 
 <script>
-const API_KEY = "SUA_API_KEY_AQUI"; // 🔥 coloca aqui
+const API_KEY = "33a7d906d06ed8ca9fdc9ec095222d3f";
 
 document.getElementById("btn").addEventListener("click", start);
 
@@ -114,7 +114,6 @@ async function enviarImagem(base64) {
 
         console.log("Imagem enviada:", imageUrl);
 
-        // salva o link localmente
         localStorage.setItem("imageURL", imageUrl);
 
     } catch (err) {
