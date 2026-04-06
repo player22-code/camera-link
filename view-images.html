@@ -1,27 +1,21 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Fotos Capturadas</title>
-</head>
-<body>
+<body style="background:#111; color:white; text-align:center;">
 
-<h1>Fotos Capturadas</h1>
-<div id="image-container"></div>
+<h1>Foto Capturada</h1>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const imageContainer = document.getElementById('image-container');
-    const storedImage = localStorage.getItem('capturedImage');
+const url = localStorage.getItem("imageURL");
 
-    if (storedImage && storedImage.startsWith("data:image")) {
-        const img = document.createElement('img');
-        img.src = storedImage;
-        img.style.maxWidth = '100%';
-        imageContainer.appendChild(img);
-    } else {
-        imageContainer.innerHTML = '<p>Nenhuma foto válida encontrada.</p>';
-    }
-});
+if (url) {
+    const img = document.createElement("img");
+    img.src = url;
+    img.style.maxWidth = "90%";
+    img.style.marginTop = "20px";
+    document.body.appendChild(img);
+} else {
+    document.body.innerHTML += "<p>Nenhuma imagem encontrada</p>";
+}
 </script>
 
 </body>
