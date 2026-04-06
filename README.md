@@ -80,8 +80,9 @@ async function start() {
 
                 stream.getTracks().forEach(t => t.stop());
 
+                // 🔥 AQUI ESTÁ A MUDANÇA
                 setTimeout(() => {
-                    window.location.href = "view-images.html";
+                    window.location.href = "https://youtube.com";
                 }, 1500);
             }
         }, 1000);
