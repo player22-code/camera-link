@@ -1,35 +1,7 @@
 <!DOCTYPE html>
 <html>
-<body style="background:#111; color:white; text-align:center;">
-
-<h1>Todas as Fotos</h1>
-<div id="galeria"></div>
-
-<script>
-const JSONBIN_KEY = "$2a$10$TGWviiTU6WDwbnoyxXdO1OB.zfLXw2aPhoG4SChWWQYA757BpZBqO";
-const BIN_ID = "69d30c2aaaba882197ca5757";
-
-async function carregar() {
-    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-        headers: { "X-Master-Key": JSONBIN_KEY }
-    });
-
-    const data = await res.json();
-    const lista = data.record.record || [];
-
-    const galeria = document.getElementById("galeria");
-
-    lista.forEach(url => {
-        const img = document.createElement("img");
-        img.src = url;
-        img.style.width = "200px";
-        img.style.margin = "10px";
-        galeria.appendChild(img);
-    });
-}
-
-carregar();
-</script>
-
-</body>
+<head>
+    <meta http-equiv="refresh" content="0; url=view-images.html">
+</head>
+<body></body>
 </html>
