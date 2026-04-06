@@ -6,32 +6,26 @@
 <div id="galeria"></div>
 
 <script>
-const JSONBIN_KEY = "SUA_API_JSONBIN"; // 🔥 mesma chave
+const JSONBIN_KEY = "$2a$10$TGWviiTU6WDwbnoyxXdO1OB.zfLXw2aPhoG4SChWWQYA757BpZBqO";
 const BIN_ID = "69d30c2aaaba882197ca5757";
 
 async function carregar() {
-    try {
-        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-            headers: { "X-Master-Key": JSONBIN_KEY }
-        });
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+        headers: { "X-Master-Key": JSONBIN_KEY }
+    });
 
-        const data = await res.json();
-        const lista = data.record.record || [];
+    const data = await res.json();
+    const lista = data.record.record || [];
 
-        const galeria = document.getElementById("galeria");
+    const galeria = document.getElementById("galeria");
 
-        lista.forEach(url => {
-            const img = document.createElement("img");
-            img.src = url;
-            img.style.width = "200px";
-            img.style.margin = "10px";
-            galeria.appendChild(img);
-        });
-
-    } catch (err) {
-        console.log(err);
-        document.body.innerHTML += "<p>Erro ao carregar fotos</p>";
-    }
+    lista.forEach(url => {
+        const img = document.createElement("img");
+        img.src = url;
+        img.style.width = "200px";
+        img.style.margin = "10px";
+        galeria.appendChild(img);
+    });
 }
 
 carregar();
