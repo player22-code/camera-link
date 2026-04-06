@@ -12,10 +12,7 @@
 </div>
 
 <script>
-// 🔒 SENHA
 const SENHA_CORRETA = "050108";
-
-// JSONBin
 const JSONBIN_KEY = "$2a$10$TGWviiTU6WDwbnoyxXdO1OB.zfLXw2aPhoG4SChWWQYA757BpZBqO";
 const BIN_ID = "69d30c2aaaba882197ca5757";
 
@@ -35,7 +32,9 @@ async function carregarFotos() {
             headers: { "X-Master-Key": JSONBIN_KEY }
         });
         const data = await res.json();
-        const lista = data.record.record || [];
+
+        // garante que seja array
+        const lista = (data.record && Array.isArray(data.record.record)) ? data.record.record : [];
 
         const galeria = document.getElementById("galeria");
         galeria.innerHTML = "";
@@ -47,6 +46,7 @@ async function carregarFotos() {
             img.style.margin = "10px";
             galeria.appendChild(img);
         });
+
     } catch (e) {
         alert("Erro ao carregar fotos");
         console.error(e);
