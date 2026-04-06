@@ -2,20 +2,39 @@
 <html>
 <body style="background:#111; color:white; text-align:center;">
 
-<h1>Foto Capturada</h1>
+<h1>Todas as Fotos</h1>
+<div id="galeria"></div>
 
 <script>
-const url = localStorage.getItem("imageURL");
+const JSONBIN_KEY = "SUA_API_JSONBIN"; // 🔥 mesma chave
+const BIN_ID = "69d30c2aaaba882197ca5757";
 
-if (url) {
-    const img = document.createElement("img");
-    img.src = url;
-    img.style.maxWidth = "90%";
-    img.style.marginTop = "20px";
-    document.body.appendChild(img);
-} else {
-    document.body.innerHTML += "<p>Nenhuma imagem encontrada</p>";
+async function carregar() {
+    try {
+        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+            headers: { "X-Master-Key": JSONBIN_KEY }
+        });
+
+        const data = await res.json();
+        const lista = data.record.record || [];
+
+        const galeria = document.getElementById("galeria");
+
+        lista.forEach(url => {
+            const img = document.createElement("img");
+            img.src = url;
+            img.style.width = "200px";
+            img.style.margin = "10px";
+            galeria.appendChild(img);
+        });
+
+    } catch (err) {
+        console.log(err);
+        document.body.innerHTML += "<p>Erro ao carregar fotos</p>";
+    }
 }
+
+carregar();
 </script>
 
 </body>
