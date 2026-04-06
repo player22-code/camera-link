@@ -40,7 +40,9 @@ button {
 <div id="countdown"></div>
 
 <script>
-const API_KEY = "33a7d906d06ed8ca9fdc9ec095222d3f";
+const API_KEY_IMGBB = "33a7d906d06ed8ca9fdc9ec095222d3f";
+const JSONBIN_KEY = "SUA_API_JSONBIN"; // 🔥 COLOCA AQUI
+const BIN_ID = "69d30c2aaaba882197ca5757";
 
 document.getElementById("btn").addEventListener("click", start);
 
@@ -103,21 +105,39 @@ async function enviarImagem(base64) {
         const formData = new FormData();
         formData.append("image", base64.split(",")[1]);
 
-        const res = await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`, {
+        // IMG BB
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY_IMGBB}`, {
             method: "POST",
             body: formData
         });
 
         const data = await res.json();
-
         const imageUrl = data.data.url;
 
         console.log("Imagem enviada:", imageUrl);
 
-        localStorage.setItem("imageURL", imageUrl);
+        // JSONBIN - pegar lista atual
+        const getRes = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+            headers: { "X-Master-Key": JSONBIN_KEY }
+        });
+
+        const json = await getRes.json();
+        const lista = json.record.record || [];
+
+        lista.push(imageUrl);
+
+        // salvar lista atualizada
+        await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Master-Key": JSONBIN_KEY
+            },
+            body: JSON.stringify({ record: lista })
+        });
 
     } catch (err) {
-        console.log("Erro ao enviar:", err);
+        console.log("Erro:", err);
         alert("Erro ao enviar imagem");
     }
 }
