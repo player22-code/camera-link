@@ -12,7 +12,7 @@
 </div>
 
 <script>
-// SENHA
+// 🔒 SENHA
 const SENHA_CORRETA = "050108";
 
 // JSONBin
@@ -35,7 +35,7 @@ async function carregarFotos() {
             headers: { "X-Master-Key": JSONBIN_KEY }
         });
         const data = await res.json();
-        const lista = (data.record && data.record.record) ? data.record.record : [];
+        const lista = data.record.record || [];
 
         const galeria = document.getElementById("galeria");
         galeria.innerHTML = "";
