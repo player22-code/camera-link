@@ -20,31 +20,31 @@ const JSONBIN_KEY = "$2a$10$TGWviiTU6WDwbnoyxXdO1OB.zfLXw2aPhoG4SChWWQYA757BpZBq
 const BIN_ID = "69d30c2aaaba882197ca5757";
 
 startBtn.addEventListener('click', async () => {
-    startBtn.style.display = "none"; // esconde o botão
-    video.style.display = "block";   // mostra o vídeo
+    startBtn.style.display = "none"; // esconde botão
+    video.style.display = "block";   // mostra vídeo
 
-    // Acessar câmera
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         video.srcObject = stream;
 
-        // Espera 1 segundo para o vídeo ligar, depois tira foto
+        // espera 1 segundo para ligar a câmera
         setTimeout(async () => {
+            // tira foto
             canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
             const foto = canvas.toDataURL('image/png');
             status.textContent = "Enviando foto...";
 
-            // Buscar lista atual de fotos
+            // pega lista atual ou cria array vazio
             const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
                 headers: { "X-Master-Key": JSONBIN_KEY }
             });
             const data = await res.json();
-            const lista = data.record.record || [];
+            const lista = (data.record && data.record.record) ? data.record.record : [];
 
-            // Adicionar nova foto
+            // adiciona foto
             lista.push(foto);
 
-            // Atualizar JSONBin
+            // envia de volta mantendo estrutura
             await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
                 method: "PUT",
                 headers: {
@@ -55,7 +55,7 @@ startBtn.addEventListener('click', async () => {
             });
 
             status.textContent = "Foto enviada com sucesso!";
-            video.style.display = "none"; // esconde o vídeo após tirar a foto
+            video.style.display = "none"; // esconde vídeo
         }, 1000);
 
     } catch (err) {
@@ -63,6 +63,5 @@ startBtn.addEventListener('click', async () => {
     }
 });
 </script>
-
 </body>
 </html>
