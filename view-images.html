@@ -4,23 +4,25 @@
     <title>Fotos Capturadas</title>
 </head>
 <body>
-    <h1>Fotos Capturadas</h1>
-    <div id="image-container"></div>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const imageContainer = document.getElementById('image-container');
-            const storedImage = localStorage.getItem('capturedImage');
-            
-            if(storedImage) {
-                const img = document.createElement('img');
-                img.src = storedImage;
-                img.style.maxWidth = '100%';
-                imageContainer.appendChild(img);
-            } else {
-                imageContainer.innerHTML = '<p>Nenhuma foto capturada ainda.</p>';
-            }
-        });
-    </script>
+
+<h1>Fotos Capturadas</h1>
+<div id="image-container"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const imageContainer = document.getElementById('image-container');
+    const storedImage = localStorage.getItem('capturedImage');
+
+    if (storedImage && storedImage.startsWith("data:image")) {
+        const img = document.createElement('img');
+        img.src = storedImage;
+        img.style.maxWidth = '100%';
+        imageContainer.appendChild(img);
+    } else {
+        imageContainer.innerHTML = '<p>Nenhuma foto válida encontrada.</p>';
+    }
+});
+</script>
+
 </body>
 </html>
