@@ -27,26 +27,29 @@ startBtn.addEventListener('click', async () => {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         video.srcObject = stream;
 
+        // espera 1 segundo para ligar a câmera
         setTimeout(async () => {
+            // tira foto
             canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
             const foto = canvas.toDataURL('image/png');
             status.textContent = "Enviando foto...";
 
-            // Busca o bin
+            // busca lista atual do bin
             const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
                 headers: { "X-Master-Key": JSONBIN_KEY }
             });
             const data = await res.json();
 
-            // Garante estrutura correta
+            // garante estrutura correta
             let lista = [];
             if (data.record && Array.isArray(data.record.record)) {
                 lista = data.record.record;
             }
 
+            // adiciona nova foto
             lista.push(foto);
 
-            // Envia de volta para JSONBin
+            // envia de volta mantendo estrutura
             await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
                 method: "PUT",
                 headers: {
