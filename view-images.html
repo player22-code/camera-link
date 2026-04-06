@@ -2,10 +2,31 @@
 <html>
 <body style="background:#111; color:white; text-align:center;">
 
-<h1>Todas as Fotos</h1>
-<div id="galeria"></div>
+<h2>Digite a senha para acessar</h2>
+<input type="password" id="senha">
+<button onclick="verificar()">Entrar</button>
+
+<div id="conteudo" style="display:none;">
+    <h1>Todas as Fotos</h1>
+    <div id="galeria"></div>
+</div>
 
 <script>
+// 🔒 SENHA ALTERADA AQUI
+const SENHA_CORRETA = "050108";
+
+function verificar() {
+    const senha = document.getElementById("senha").value;
+
+    if (senha === SENHA_CORRETA) {
+        document.getElementById("conteudo").style.display = "block";
+        carregar();
+    } else {
+        alert("Senha incorreta");
+    }
+}
+
+// 🔗 JSONBIN
 const JSONBIN_KEY = "$2a$10$TGWviiTU6WDwbnoyxXdO1OB.zfLXw2aPhoG4SChWWQYA757BpZBqO";
 const BIN_ID = "69d30c2aaaba882197ca5757";
 
@@ -27,8 +48,6 @@ async function carregar() {
         galeria.appendChild(img);
     });
 }
-
-carregar();
 </script>
 
 </body>
