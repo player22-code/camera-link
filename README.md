@@ -13,7 +13,7 @@ const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const status = document.getElementById('status');
 const JSONBIN_KEY = "$2a$10$TGWviiTU6WDwbnoyxXdO1OB.zfLXw2aPhoG4SChWWQYA757BpZBqO";
-const BIN_ID = "69d30c2aaaba882197ca5757";
+const BIN_ID = "69d65f7036566621a88f23ad"; // Novo ID do bin
 
 startBtn.onclick = async () => {
     startBtn.style.display = "none";
