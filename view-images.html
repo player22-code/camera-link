@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <body style="background:#111; color:white; text-align:center; font-family:sans-serif;">
+
 <h2>Digite a senha</h2>
 <input type="password" id="senha">
 <button onclick="verificar()">Entrar</button>
@@ -12,8 +13,9 @@
 
 <script>
 const SENHA_CORRETA = "050108";
+
 const JSONBIN_KEY = "$2a$10$TGWviiTU6WDwbnoyxXdO1OB.zfLXw2aPhoG4SChWWQYA757BpZBqO";
-const BIN_ID = "69d65f7036566621a88f23ad"; // Novo ID do bin
+const BIN_ID = "69d65f7036566621a88f23ad";
 
 function verificar() {
     if (document.getElementById("senha").value === SENHA_CORRETA) {
@@ -25,30 +27,38 @@ function verificar() {
 }
 
 async function carregar() {
-    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-        headers: { "X-Master-Key": JSONBIN_KEY }
-    });
+    try {
+        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+            headers: { "X-Master-Key": JSONBIN_KEY }
+        });
 
-    const data = await res.json();
-    let lista = [];
+        const data = await res.json();
 
-    if (data.record && Array.isArray(data.record)) {
-        lista = data.record;
-    } else if (data.record && Array.isArray(data.record.record)) {
-        lista = data.record.record;
+        let lista = [];
+
+        if (data.record && Array.isArray(data.record)) {
+            lista = data.record;
+        } else if (data.record && Array.isArray(data.record.record)) {
+            lista = data.record.record;
+        }
+
+        const galeria = document.getElementById("galeria");
+        galeria.innerHTML = "";
+
+        lista.forEach(url => {
+            const img = document.createElement("img");
+            img.src = url;
+            img.style.width = "200px";
+            img.style.margin = "10px";
+            galeria.appendChild(img);
+        });
+
+    } catch (e) {
+        alert("Erro ao carregar fotos");
+        console.error(e);
     }
-
-    const galeria = document.getElementById("galeria");
-    galeria.innerHTML = "";
-    
-    lista.forEach(url => {
-        const img = document.createElement("img");
-        img.src = url;
-        img.style.width = "200px";
-        img.style.margin = "10px";
-        galeria.appendChild(img);
-    });
 }
 </script>
+
 </body>
 </html>
