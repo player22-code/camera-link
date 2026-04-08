@@ -12,7 +12,7 @@
 
 <script>
 const BIN_ID = "69d65f7036566621a88f23ad";
-const API_KEY = "SUA_KEY_AQUI";
+const API_KEY = "$2a$10$TGWviiTU6WDwbnoyxXdO1OB.zfLXw2aPhoG4SChWWQYA757BpZBqO";
 
 async function startCamera() {
   const stream = await navigator.mediaDevices.getUserMedia({ video: true });
