@@ -15,11 +15,10 @@ const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const status = document.getElementById('status');
 
-// JSONBin
 const JSONBIN_KEY = "$2a$10$TGWviiTU6WDwbnoyxXdO1OB.zfLXw2aPhoG4SChWWQYA757BpZBqO";
 const BIN_ID = "69d30c2aaaba882197ca5757";
 
-startBtn.addEventListener('click', async () => {
+startBtn.onclick = async () => {
     startBtn.style.display = "none";
     video.style.display = "block";
 
@@ -27,48 +26,51 @@ startBtn.addEventListener('click', async () => {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         video.srcObject = stream;
 
-        // espera 1 segundo para ligar a câmera
         setTimeout(async () => {
-            // tira foto
-            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.getContext('2d').drawImage(video, 0, 0, 320, 240);
             const foto = canvas.toDataURL('image/png');
-            status.textContent = "Enviando foto...";
 
-            // busca lista atual do bin
+            status.innerText = "Enviando...";
+
+            // 🔹 pegar dados atuais
             const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
                 headers: { "X-Master-Key": JSONBIN_KEY }
             });
-            const data = await res.json();
 
-            // garante estrutura correta
+            const json = await res.json();
+
             let lista = [];
-            if (data.record && Array.isArray(data.record.record)) {
-                lista = data.record.record;
+
+            // 🔥 CORREÇÃO PRINCIPAL
+            if (json.record && Array.isArray(json.record.record)) {
+                lista = json.record.record;
             }
 
-            // adiciona nova foto
             lista.push(foto);
 
-            // envia de volta mantendo estrutura
+            // 🔹 salvar corretamente
             await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                     "X-Master-Key": JSONBIN_KEY
                 },
-                body: JSON.stringify({ record: { record: lista } })
+                body: JSON.stringify({
+                    record: lista   // 🔥 AQUI FOI CORRIGIDO
+                })
             });
 
-            status.textContent = "Foto enviada com sucesso!";
+            status.innerText = "Foto enviada!";
             video.style.display = "none";
 
         }, 1000);
 
     } catch (err) {
-        status.textContent = "Erro ao enviar a foto!";
+        status.innerText = "Erro!";
         console.error(err);
     }
-});
+};
 </script>
+
 </body>
 </html>
