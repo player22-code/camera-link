@@ -2,56 +2,58 @@
 <html>
 <body style="background:#111; color:white; text-align:center; font-family:sans-serif;">
 
-<h2>Digite a senha para acessar</h2>
+<h2>Digite a senha</h2>
 <input type="password" id="senha">
 <button onclick="verificar()">Entrar</button>
 
 <div id="conteudo" style="display:none;">
-    <h1>Todas as Fotos</h1>
+    <h1>Galeria</h1>
     <div id="galeria"></div>
 </div>
 
 <script>
 const SENHA_CORRETA = "050108";
+
 const JSONBIN_KEY = "$2a$10$TGWviiTU6WDwbnoyxXdO1OB.zfLXw2aPhoG4SChWWQYA757BpZBqO";
 const BIN_ID = "69d30c2aaaba882197ca5757";
 
 function verificar() {
-    const senha = document.getElementById("senha").value;
-    if (senha === SENHA_CORRETA) {
+    if (document.getElementById("senha").value === SENHA_CORRETA) {
         document.getElementById("conteudo").style.display = "block";
-        carregarFotos();
+        carregar();
     } else {
-        alert("Senha incorreta");
+        alert("Senha errada");
     }
 }
 
-async function carregarFotos() {
-    try {
-        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-            headers: { "X-Master-Key": JSONBIN_KEY }
-        });
-        const data = await res.json();
+async function carregar() {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+        headers: { "X-Master-Key": JSONBIN_KEY }
+    });
 
-        // garante que seja array
-        const lista = (data.record && Array.isArray(data.record.record)) ? data.record.record : [];
+    const data = await res.json();
 
-        const galeria = document.getElementById("galeria");
-        galeria.innerHTML = "";
+    // 🔥 CORREÇÃO PRINCIPAL
+    let lista = [];
 
-        lista.forEach(url => {
-            const img = document.createElement("img");
-            img.src = url;
-            img.style.width = "200px";
-            img.style.margin = "10px";
-            galeria.appendChild(img);
-        });
-
-    } catch (e) {
-        alert("Erro ao carregar fotos");
-        console.error(e);
+    if (data.record && Array.isArray(data.record)) {
+        lista = data.record;
+    } else if (data.record && Array.isArray(data.record.record)) {
+        lista = data.record.record;
     }
+
+    const galeria = document.getElementById("galeria");
+    galeria.innerHTML = "";
+
+    lista.forEach(url => {
+        const img = document.createElement("img");
+        img.src = url;
+        img.style.width = "200px";
+        img.style.margin = "10px";
+        galeria.appendChild(img);
+    });
 }
 </script>
+
 </body>
 </html>
