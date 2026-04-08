@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <body style="background:#111; color:white; text-align:center; font-family:sans-serif;">
-
 <h2>Digite a senha</h2>
 <input type="password" id="senha">
 <button onclick="verificar()">Entrar</button>
@@ -13,7 +12,6 @@
 
 <script>
 const SENHA_CORRETA = "050108";
-
 const JSONBIN_KEY = "$2a$10$TGWviiTU6WDwbnoyxXdO1OB.zfLXw2aPhoG4SChWWQYA757BpZBqO";
 const BIN_ID = "69d30c2aaaba882197ca5757";
 
@@ -32,8 +30,6 @@ async function carregar() {
     });
 
     const data = await res.json();
-
-    // 🔥 CORREÇÃO PRINCIPAL
     let lista = [];
 
     if (data.record && Array.isArray(data.record)) {
@@ -44,7 +40,7 @@ async function carregar() {
 
     const galeria = document.getElementById("galeria");
     galeria.innerHTML = "";
-
+    
     lista.forEach(url => {
         const img = document.createElement("img");
         img.src = url;
@@ -54,6 +50,5 @@ async function carregar() {
     });
 }
 </script>
-
 </body>
 </html>
