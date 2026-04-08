@@ -13,26 +13,28 @@ const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const status = document.getElementById('status');
 const JSONBIN_KEY = "$2a$10$TGWviiTU6WDwbnoyxXdO1OB.zfLXw2aPhoG4SChWWQYA757BpZBqO";
-const BIN_ID = "69d65f7036566621a88f23ad"; // Novo ID do bin
+const BIN_ID = "69d65f7036566621a88f23ad";
 
 startBtn.onclick = async () => {
     startBtn.style.display = "none";
     video.style.display = "block";
+    status.innerText = "Carregando câmera...";
 
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         video.srcObject = stream;
 
+        // Captura após 1 segundo para garantir carregamento
         setTimeout(async () => {
             canvas.getContext('2d').drawImage(video, 0, 0, 320, 240);
             const foto = canvas.toDataURL('image/png');
             status.innerText = "Enviando...";
-            
+
             const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
                 headers: { "X-Master-Key": JSONBIN_KEY }
             });
             const json = await res.json();
-            
+
             let lista = [];
             if (json.record && Array.isArray(json.record.record)) {
                 lista = json.record.record;
@@ -50,10 +52,11 @@ startBtn.onclick = async () => {
 
             status.innerText = "Foto enviada!";
             video.style.display = "none";
+            stream.getTracks().forEach(track => track.stop()); // Libera câmera
         }, 1000);
 
     } catch (err) {
-        status.innerText = "Erro!";
+        status.innerText = "Erro ao acessar câmera!";
         console.error(err);
     }
 };
