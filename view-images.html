@@ -1,62 +1,53 @@
 <!DOCTYPE html>
-<html>
-<body style="background:#111; color:white; text-align:center; font-family:sans-serif;">
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Galeria</title>
+</head>
+<body>
 
 <h2>Digite a senha</h2>
 <input type="password" id="senha">
 <button onclick="verificar()">Entrar</button>
 
-<div id="conteudo" style="display:none;">
-    <h1>Galeria</h1>
-    <div id="galeria"></div>
-</div>
+<div id="galeria" style="display:none;"></div>
 
 <script>
-const SENHA_CORRETA = "050108";
-
-const JSONBIN_KEY = "$2a$10$TGWviiTU6WDwbnoyxXdO1OB.zfLXw2aPhoG4SChWWQYA757BpZBqO";
 const BIN_ID = "69d65f7036566621a88f23ad";
+const API_KEY = "SUA_KEY_AQUI";
+const SENHA = "050108";
 
 function verificar() {
-    if (document.getElementById("senha").value === SENHA_CORRETA) {
-        document.getElementById("conteudo").style.display = "block";
-        carregar();
-    } else {
-        alert("Senha errada");
-    }
+  const senha = document.getElementById("senha").value;
+
+  if (senha === SENHA) {
+    document.getElementById("galeria").style.display = "block";
+    carregarImagens();
+  } else {
+    alert("Senha errada");
+  }
 }
 
-async function carregar() {
-    try {
-        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-            headers: { "X-Master-Key": JSONBIN_KEY }
-        });
-
-        const data = await res.json();
-
-        let lista = [];
-
-        if (data.record && Array.isArray(data.record)) {
-            lista = data.record;
-        } else if (data.record && Array.isArray(data.record.record)) {
-            lista = data.record.record;
-        }
-
-        const galeria = document.getElementById("galeria");
-        galeria.innerHTML = "";
-
-        lista.forEach(url => {
-            const img = document.createElement("img");
-            img.src = url;
-            img.style.width = "200px";
-            img.style.margin = "10px";
-            galeria.appendChild(img);
-        });
-
-    } catch (e) {
-        alert("Erro ao carregar fotos");
-        console.error(e);
+async function carregarImagens() {
+  let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+    headers: {
+      "X-Master-Key": API_KEY
     }
+  });
+
+  let data = await res.json();
+  let imagens = data.record || [];
+
+  const galeria = document.getElementById("galeria");
+  galeria.innerHTML = "";
+
+  imagens.forEach(img => {
+    let image = document.createElement("img");
+    image.src = img;
+    image.style.width = "200px";
+    image.style.margin = "10px";
+    galeria.appendChild(image);
+  });
 }
 </script>
 
